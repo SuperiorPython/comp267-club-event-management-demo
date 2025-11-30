@@ -7,7 +7,7 @@ const pool = require('./db');
 const app = express();
 const PORT = 3000;
 
-// middleware
+// body parsing middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -22,13 +22,26 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// ------------ ROLE MIDDLEWARE ------------
+function requireManagerOrAdmin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+
+  const role = req.session.user.role;
+
+  if (role === 'Manager' || role === 'Administrator') {
+    return next();
+  }
+
+  return res.status(403).send("Access denied: Managers or Admins only.");
+}
 
 // ============================
 // DASHBOARD (HOME PAGE)
 // ============================
 app.get('/', async (req, res) => {
   try {
-    // upcoming events
     const [events] = await pool.query(
       `SELECT e.event_id, e.event_name, e.event_date, c.club_name, 
               e.location, e.capacity
@@ -39,7 +52,6 @@ app.get('/', async (req, res) => {
        LIMIT 10`
     );
 
-    // campus stats via view
     let campusStats = [];
     try {
       const [rows] = await pool.query(`SELECT * FROM vw_campus_stats`);
@@ -59,7 +71,6 @@ app.get('/', async (req, res) => {
     res.status(500).send('Error loading dashboard');
   }
 });
-
 
 // ============================
 // CLUBS PAGE
@@ -92,9 +103,8 @@ app.get('/clubs', async (req, res) => {
   }
 });
 
-
 // ============================
-// MEMBER ACTIVITY PAGE (REAL LOGIN)
+// MEMBER ACTIVITY PAGE
 // ============================
 app.get('/member', async (req, res) => {
   if (!req.session.user) {
@@ -122,10 +132,11 @@ app.get('/member', async (req, res) => {
   }
 });
 
-
 // ============================
 // EVENTS LIST + CREATE EVENT
 // ============================
+
+// GET /events  ← This is the one you were missing
 app.get('/events', async (req, res) => {
   try {
     const [events] = await pool.query(
@@ -153,9 +164,8 @@ app.get('/events', async (req, res) => {
   }
 });
 
-
-// CREATE EVENT ENDPOINT
-app.post('/events/create', async (req, res) => {
+// POST /events/create  ← Restricted to Manager/Admin
+app.post('/events/create', requireManagerOrAdmin, async (req, res) => {
   const { club_id, event_name, description, event_date, location, capacity, event_type } = req.body;
 
   try {
@@ -164,13 +174,16 @@ app.post('/events/create', async (req, res) => {
         (club_id, event_name, description, event_date, location, capacity, event_type)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
-        club_id, event_name, description || null,
-        event_date, location || null,
-        capacity || null, event_type || null
+        club_id,
+        event_name,
+        description || null,
+        event_date,
+        location || null,
+        capacity || null,
+        event_type || null
       ]
     );
 
-    // Reload event list after creation
     const [events] = await pool.query(
       `SELECT e.event_id, e.event_name, e.event_date, c.club_name, 
               e.location, e.capacity, e.event_status
@@ -195,7 +208,6 @@ app.post('/events/create', async (req, res) => {
     res.status(500).send('Error creating event');
   }
 });
-
 
 // ============================
 // LOGIN
@@ -230,7 +242,6 @@ app.post('/login', async (req, res) => {
 
     const u = rows[0];
 
-    // Save user in session
     req.session.user = {
       member_id: u.member_id,
       name: `${u.first_name} ${u.last_name}`,
@@ -245,7 +256,6 @@ app.post('/login', async (req, res) => {
     res.render('login', { error: 'Server error during login.', user: null });
   }
 });
-
 
 // ============================
 // NO-SHOW REPORT
@@ -282,7 +292,6 @@ app.get('/no-show', async (req, res) => {
     res.status(500).send('Error loading no-show report');
   }
 });
-
 
 // ============================
 // START SERVER
