@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Events</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { padding: 8px 12px; border: 1px solid #ccc; }
+    th { background-color: #f5f5f5; }
+    .success { color: green; font-weight: bold; margin-top: 10px; }
+    .error { color: red; font-weight: bold; margin-top: 10px; }
+    .form-section { margin-top: 40px; }
+    input, select, textarea { width: 300px; padding: 6px; margin-bottom: 10px; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+  </style>
+</head>
+
+<body>
+
+  <h1>Events</h1>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="/">Dashboard</a> |
+    <a href="/clubs">Clubs</a> |
+    <a href="/events">Events</a> |
+    <a href="/no-show">No-Show Report</a> |
+    <a href="/member">My Activity</a> |
+    <a href="/login">Login</a>
+  </nav>
+
+  <hr>
+
+  <!-- Message After Creating an Event -->
+  <% if (message) { %>
+    <p class="success"><%= message %></p>
+  <% } %>
+
+  <!-- EVENTS TABLE -->
+  <h2>All Events</h2>
+
+  <table>
+    <tr>
+      <th>Event Name</th>
+      <th>Date</th>
+      <th>Club</th>
+      <th>Location</th>
+      <th>Capacity</th>
+      <th>Status</th>
+    </tr>
+
+    <% events.forEach(event => { %>
+      <tr>
+        <td><%= event.event_name %></td>
+        <td><%= event.event_date.toLocaleString() %></td>
+        <td><%= event.club_name %></td>
+        <td><%= event.location || "-" %></td>
+        <td><%= event.capacity || "-" %></td>
+        <td><%= event.event_status %></td>
+      </tr>
+    <% }) %>
+  </table>
+
+
+  <!-- EVENT CREATION FORM (Restricted by Role) -->
+  <div class="form-section">
+
+    <h2>Create New Event</h2>
+
+    <% if (!user) { %>
+
+      <p class="error">You must be logged in to create events.</p>
+
+    <% } else if (user.role === "Manager" || user.role === "Administrator") { %>
+
+      <form action="/events/create" method="POST">
+
+        <label>Club:</label>
+        <select name="club_id" required>
+          <option value="">Select Club</option>
+          <% clubs.forEach(c => { %>
+            <option value="<%= c.club_id %>"><%= c.club_name %></option>
+          <% }) %>
+        </select>
+
+        <label>Event Name:</label>
+        <input type="text" name="event_name" required>
+
+        <label>Description:</label>
+        <textarea name="description" rows="3"></textarea>
+
+        <label>Event Date & Time:</label>
+        <input type="datetime-local" name="event_date" required>
+
+        <label>Location:</label>
+        <input type="text" name="location">
+
+        <label>Capacity:</label>
+        <input type="number" name="capacity" min="0">
+
+        <label>Event Type:</label>
+        <input type="text" name="event_type">
+
+        <button type="submit">Create Event</button>
+      </form>
+
+    <% } else { %>
+
+      <p class="error">
+        Access Denied: Only Managers and Administrators may create new events.
+      </p>
+
+    <% } %>
+
+  </div>
+
+</body>
+</html>

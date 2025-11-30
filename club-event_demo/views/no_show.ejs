@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>No-Show Report – ClubEventManagement</title>
+</head>
+<body>
+  <h1>No-Show Report</h1>
+
+  <nav>
+    <a href="/">Dashboard</a> |
+    <a href="/clubs">Clubs</a> |
+    <a href="/events">Events</a> |
+    <a href="/member">Member Activity</a> |
+    <a href="/no-show">No-Show Report</a> |
+    <a href="/login">Login</a>
+  </nav>
+
+  <hr>
+
+  <p>
+    This report lists members who <strong>RSVP’d as Confirmed</strong> for past events
+    but <strong>did not check in</strong>. It uses data from the <code>event</code>,
+    <code>rsvp</code>, <code>attendance</code>, <code>member</code>, and
+    <code>club</code> tables.
+  </p>
+
+  <% if (!results || results.length === 0) { %>
+    <p>No no-show records found.</p>
+  <% } else { %>
+    <table border="1" cellpadding="4">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Club</th>
+          <th>Event Date</th>
+          <th>Member Name</th>
+          <th>Member Email</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% results.forEach(row => { %>
+        <tr>
+          <td><%= row.event_name %></td>
+          <td><%= row.club_name %></td>
+          <td><%= new Date(row.event_date).toLocaleString() %></td>
+          <td><%= row.member_name %></td>
+          <td><%= row.email %></td>
+        </tr>
+      <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</body>
+</html>

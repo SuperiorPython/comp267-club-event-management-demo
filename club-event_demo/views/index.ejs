@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ClubEventManagement – Dashboard</title>
+</head>
+<body>
+  <h1>Club Event Management – Dashboard</h1>
+
+  <nav>
+  <a href="/">Dashboard</a> |
+  <a href="/clubs">Clubs</a> |
+  <a href="/events">Events</a> |
+  <a href="/member">Member Activity</a> |
+  <a href="/no-show">No-Show Report</a> |
+  <a href="/login">Login</a>
+</nav>
+
+
+  <hr>
+
+  <h2>Upcoming Events</h2>
+  <% if (events.length === 0) { %>
+    <p>No upcoming events.</p>
+  <% } else { %>
+    <table border="1" cellpadding="4">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Club</th>
+          <th>Date</th>
+          <th>Location</th>
+          <th>Capacity</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% events.forEach(ev => { %>
+        <tr>
+          <td><%= ev.event_name %></td>
+          <td><%= ev.club_name %></td>
+          <td><%= new Date(ev.event_date).toLocaleString() %></td>
+          <td><%= ev.location || '' %></td>
+          <td><%= ev.capacity || '' %></td>
+        </tr>
+      <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <h2>Campus Stats (by Category)</h2>
+  <% if (!campusStats || campusStats.length === 0) { %>
+    <p>No campus stats available (view may not exist).</p>
+  <% } else { %>
+    <table border="1" cellpadding="4">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Total Clubs</th>
+          <th>Total Members</th>
+          <th>Total Events</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% campusStats.forEach(row => { %>
+        <tr>
+          <td><%= row.category %></td>
+          <td><%= row.total_clubs %></td>
+          <td><%= row.total_members %></td>
+          <td><%= row.total_events %></td>
+        </tr>
+      <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login – ClubEventManagement</title>
+</head>
+<body>
+  <h1>Login</h1>
+
+  <nav>
+  <a href="/">Dashboard</a> |
+  <a href="/clubs">Clubs</a> |
+  <a href="/events">Events</a> |
+  <a href="/member">Member Activity</a> |
+  <a href="/no-show">No-Show Report</a> |
+  <a href="/login">Login</a>
+</nav>
+
+
+  <hr>
+
+  <form method="POST" action="/login">
+    <label for="email">Member Email:</label>
+    <input type="email" id="email" name="email" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <br>
+
+  <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+  <% } %>
+
+  <% if (user) { %>
+    <h2>Login Successful</h2>
+    <p><strong>Name:</strong> <%= user.name %></p>
+    <p><strong>Email:</strong> <%= user.email %></p>
+    <p><strong>Role:</strong> <%= user.role %></p>
+    <p>You can now browse the dashboard and see how different roles would use the system.</p>
+  <% } %>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Clubs – ClubEventManagement</title>
+</head>
+<body>
+  <h1>Clubs</h1>
+
+  <nav>
+  <a href="/">Dashboard</a> |
+  <a href="/clubs">Clubs</a> |
+  <a href="/events">Events</a> |
+  <a href="/member">Member Activity</a> |
+  <a href="/no-show">No-Show Report</a> |
+  <a href="/login">Login</a>
+</nav>
+
+
+  <hr>
+
+  <table border="1" cellpadding="4">
+    <thead>
+      <tr>
+        <th>Club Name</th>
+        <th>Category</th>
+        <th>Meeting Schedule</th>
+        <th>Active Members</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% clubs.forEach(c => { %>
+      <tr>
+        <td><%= c.club_name %></td>
+        <td><%= c.category %></td>
+        <td><%= c.meeting_schedule %></td>
+        <td><%= c.active_members %></td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Member Activity</title>
+</head>
+<body>
+  <h1>Member Activity</h1>
+
+  <nav>
+    <a href="/">Dashboard</a> |
+    <a href="/clubs">Clubs</a> |
+    <a href="/events">Events</a> |
+    <a href="/no-show">No-Show Report</a> |
+    <a href="/member">My Activity</a> |
+    <a href="/login">Login</a>
+  </nav>
+
+  <hr>
+
+  <% if (!user) { %>
+    <p>You are not logged in.</p>
+  <% } else { %>
+    <h2><%= user.name %> (<%= user.role %>)</h2>
+    <p><strong>Email:</strong> <%= user.email %></p>
+
+    <% if (!stats) { %>
+      <p>No activity found.</p>
+    <% } else { %>
+      <h3>Engagement Summary</h3>
+      <p><strong>Clubs Joined:</strong> <%= stats.clubs_joined %></p>
+      <p><strong>Events RSVPed:</strong> <%= stats.events_rsvped %></p>
+      <p><strong>Events Attended:</strong> <%= stats.events_attended %></p>
+    <% } %>
+  <% } %>
+</body>
+</html>
